@@ -393,6 +393,20 @@ impl USBDevice {
         let result = self.hid_device.write(buffer);
         match result {
             Ok(bytes_written) => {
+                #[cfg(target_os = "windows")]
+                //The actual number of bytes written can be greater on Windows
+                if bytes_written >= buffer.len() {
+                    Ok(())
+                } else {
+                    error!(
+                        "Bytes written, {}, was less than buffer length {}",
+                        bytes_written,
+                        buffer.len()
+                    );
+                    Err(crate::error::Error::InvalidRequest)
+                }
+
+                #[cfg(not(target_os = "windows"))]
                 if bytes_written == buffer.len() {
                     Ok(())
                 } else {
