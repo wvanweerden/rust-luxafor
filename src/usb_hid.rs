@@ -238,6 +238,10 @@ impl Device for USBDevice {
         self.id.clone()
     }
 
+    fn id_borrowed(&self) -> &str {
+        &self.id
+    }
+
     fn turn_off(&self) -> crate::error::Result<()> {
         info!("Turning device '{}' off", self.id);
         self.write(&[HID_REPORT_ID, MODE_SOLID, self.target_led, 0, 0, 0])

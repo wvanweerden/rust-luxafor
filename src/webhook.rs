@@ -50,6 +50,10 @@ impl Device for WebhookDevice {
         self.id.clone()
     }
 
+    fn id_borrowed(&self) -> &str {
+        &self.id
+    }
+
     fn turn_off(&self) -> crate::error::Result<()> {
         self.set_solid_color(SolidColor::Custom {
             red: 00,

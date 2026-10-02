@@ -193,6 +193,11 @@ pub trait Device {
     fn id(&self) -> String;
 
     ///
+    /// Return the identifier for the device.
+    ///
+    fn id_borrowed(&self) -> &str;
+
+    ///
     /// Turn the light off.
     ///
     fn turn_off(&self) -> error::Result<()>;
