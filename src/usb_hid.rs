@@ -207,6 +207,31 @@ impl USBDeviceDiscovery {
             }
         }
     }
+
+    ///
+    /// Return one or more devices, if found, that correspond to a Luxafor light.
+    ///
+    pub fn devices(&self) -> crate::error::Result<Vec<USBDevice>> {
+        let mut found_devices = Vec::new();
+        
+        for device in self.hid_api.device_list() {
+            if device.vendor_id() == LUXAFOR_VENDOR_ID && device.product_id() == LUXAFOR_PRODUCT_ID {
+                if let Some(serial_number) = device.serial_number() {
+                    match self.hid_api.open_serial(LUXAFOR_VENDOR_ID, LUXAFOR_PRODUCT_ID, serial_number) {
+                        Ok(hid_device) => found_devices.push(USBDevice::new(hid_device)?),
+                        Err(err) => error!("Could not open HID device: {:?}", err),
+                    }
+                }
+            }
+        }
+
+        if found_devices.len() > 0 {
+            Ok(found_devices)
+        }
+        else {
+            Err(crate::error::Error::DeviceNotFound)
+        }
+    }
 }
 
 // ------------------------------------------------------------------------------------------------
