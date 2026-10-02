@@ -372,20 +372,23 @@ impl TargetedDevice for USBDevice {
 
 impl USBDevice {
     fn new(hid_device: HidDevice) -> crate::error::Result<USBDevice> {
+        fn string_or_placeholder(value: &hidapi::HidResult<Option<String>>) -> &str {
+            match value {
+                Ok(option) => {
+                    match option {
+                        Some(string) => string.as_str(),
+                        None => "<unknown>",
+                    }
+                },
+                Err(_) => "<error>",
+            }
+        }
+        
         let id = format!(
             "{}::{}::{}",
-            hid_device
-                .get_manufacturer_string()
-                .unwrap_or(Some("<error>".to_string()))
-                .unwrap_or("<unknown>".to_string()),
-            hid_device
-                .get_product_string()
-                .unwrap_or(Some("<error>".to_string()))
-                .unwrap_or("<unknown>".to_string()),
-            hid_device
-                .get_serial_number_string()
-                .unwrap_or(Some("<error>".to_string()))
-                .unwrap_or("<unknown>".to_string()),
+            string_or_placeholder(&hid_device.get_manufacturer_string()),
+            string_or_placeholder(&hid_device.get_product_string()),
+            string_or_placeholder(&hid_device.get_serial_number_string()),
         );
         Ok(Self {
             hid_device,
