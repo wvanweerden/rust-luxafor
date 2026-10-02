@@ -138,14 +138,11 @@ const LUXAFOR_PRODUCT_ID: u16 = 0xf372;
 
 const HID_REPORT_ID: u8 = 0;
 
-const MODE_SIMPLE: u8 = 0;
 const MODE_SOLID: u8 = 1;
 const MODE_FADE: u8 = 2;
 const MODE_STROBE: u8 = 3;
 const MODE_WAVE: u8 = 4;
 const MODE_PATTERN: u8 = 6;
-
-const SIMPLE_COLOR_OFF: u8 = b'O';
 
 const LED_FRONT_TOP: u8 = 1;
 const LED_FRONT_MIDDLE: u8 = 2;
@@ -243,7 +240,7 @@ impl Device for USBDevice {
 
     fn turn_off(&self) -> crate::error::Result<()> {
         info!("Turning device '{}' off", self.id);
-        self.write(&[HID_REPORT_ID, MODE_SIMPLE, SIMPLE_COLOR_OFF])
+        self.write(&[HID_REPORT_ID, MODE_SOLID, self.target_led, 0, 0, 0])
     }
 
     fn set_solid_color(&self, color: SolidColor) -> crate::error::Result<()> {
