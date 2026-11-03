@@ -29,6 +29,7 @@ required-features = ["command-line"]
 
 [dependencies]
 log = "0.4.11"
+partialdebug = "0.2.0"
 
 #[feature-dependencies]
 pretty_env_logger = { version = "0.5.0", optional = true }

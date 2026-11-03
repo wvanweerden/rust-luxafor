@@ -106,6 +106,7 @@ The serial number is returned as a pair, (high,low) bytes.
 
 use crate::{Device, Pattern, SolidColor, SpecificLED, TargetedDevice, Wave};
 use hidapi::{HidApi, HidDevice};
+use partialdebug::placeholder::PartialDebug;
 
 // ------------------------------------------------------------------------------------------------
 // Public Types
@@ -114,7 +115,7 @@ use hidapi::{HidApi, HidDevice};
 ///
 /// This enables the discovery of the device using the USB HID descriptor.
 ///
-#[allow(missing_debug_implementations)]
+#[derive(PartialDebug)]
 pub struct USBDeviceDiscovery {
     hid_api: HidApi,
 }
@@ -122,7 +123,7 @@ pub struct USBDeviceDiscovery {
 ///
 /// The device implementation for a USB connected light.
 ///
-#[allow(missing_debug_implementations)]
+#[derive(PartialDebug)]
 pub struct USBDevice {
     hid_device: HidDevice,
     id: String,
@@ -210,11 +211,16 @@ impl USBDeviceDiscovery {
     ///
     pub fn devices(&self) -> crate::error::Result<Vec<USBDevice>> {
         let mut found_devices = Vec::new();
-        
+
         for device in self.hid_api.device_list() {
-            if device.vendor_id() == LUXAFOR_VENDOR_ID && device.product_id() == LUXAFOR_PRODUCT_ID {
+            if device.vendor_id() == LUXAFOR_VENDOR_ID && device.product_id() == LUXAFOR_PRODUCT_ID
+            {
                 if let Some(serial_number) = device.serial_number() {
-                    match self.hid_api.open_serial(LUXAFOR_VENDOR_ID, LUXAFOR_PRODUCT_ID, serial_number) {
+                    match self.hid_api.open_serial(
+                        LUXAFOR_VENDOR_ID,
+                        LUXAFOR_PRODUCT_ID,
+                        serial_number,
+                    ) {
                         Ok(hid_device) => found_devices.push(USBDevice::new(hid_device)?),
                         Err(err) => error!("Could not open HID device: {:?}", err),
                     }
@@ -224,8 +230,7 @@ impl USBDeviceDiscovery {
 
         if found_devices.len() > 0 {
             Ok(found_devices)
-        }
-        else {
+        } else {
             Err(crate::error::Error::DeviceNotFound)
         }
     }
@@ -374,16 +379,14 @@ impl USBDevice {
     fn new(hid_device: HidDevice) -> crate::error::Result<USBDevice> {
         fn string_or_placeholder(value: &hidapi::HidResult<Option<String>>) -> &str {
             match value {
-                Ok(option) => {
-                    match option {
-                        Some(string) => string.as_str(),
-                        None => "<unknown>",
-                    }
+                Ok(option) => match option {
+                    Some(string) => string.as_str(),
+                    None => "<unknown>",
                 },
                 Err(_) => "<error>",
             }
         }
-        
+
         let id = format!(
             "{}::{}::{}",
             string_or_placeholder(&hid_device.get_manufacturer_string()),
