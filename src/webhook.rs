@@ -46,11 +46,7 @@ const API_V1: &str = "https://api.luxafor.com/webhook/v1/actions";
 // ------------------------------------------------------------------------------------------------
 
 impl Device for WebhookDevice {
-    fn id(&self) -> String {
-        self.id.clone()
-    }
-
-    fn id_borrowed(&self) -> &str {
+    fn id(&self) -> &str {
         &self.id
     }
 

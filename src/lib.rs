@@ -190,12 +190,7 @@ pub trait Device {
     ///
     /// Return the identifier for the device.
     ///
-    fn id(&self) -> String;
-
-    ///
-    /// Return the identifier for the device.
-    ///
-    fn id_borrowed(&self) -> &str;
+    fn id(&self) -> &str;
 
     ///
     /// Turn the light off.

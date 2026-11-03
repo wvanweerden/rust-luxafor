@@ -239,11 +239,7 @@ impl USBDeviceDiscovery {
 // ------------------------------------------------------------------------------------------------
 
 impl Device for USBDevice {
-    fn id(&self) -> String {
-        self.id.clone()
-    }
-
-    fn id_borrowed(&self) -> &str {
+    fn id(&self) -> &str {
         &self.id
     }
 
